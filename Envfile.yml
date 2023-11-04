@@ -1,0 +1,13 @@
+environment:
+  powershell
+
+framework:
+  python
+
+ip:
+
+username: 
+  phuc
+
+password: 
+  hola

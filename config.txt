@@ -1,0 +1,5 @@
+environment:powershell
+framework:python
+ip:None
+username:phuc
+password:hola
