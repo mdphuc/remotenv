@@ -1,0 +1,8 @@
+[Unit]
+Description=Monitor File
+
+[Service]
+ExecStart=/usr/bin/monitor.sh
+
+[Install]
+WantedBy=multi-user.target
