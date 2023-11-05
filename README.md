@@ -19,7 +19,7 @@ Use <a href="https://git-scm.com/" target="_blank">git</a> to install:
 ```bash
 git clone https://github.com/mdphuc/remotenv.git
 ```
-run `cmdlets` to set up the program as powershell cmdlets
+run `./setup.ps1` as administrator to set up the program as powershell cmdlets
 
 ## Usage
 ```powershell
