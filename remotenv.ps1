@@ -10,8 +10,7 @@ $python_version = $python_version[0] + $python_version[1]
 
 if($option -ne "build" -And $option -ne "cmdlets"){
   Write-Host "
-.\remotenv.ps1
-
+remotenv
   build:            set up remote dev environment
                         docker: build docker container
                         remote machine: use remote machine as remote dev environment
