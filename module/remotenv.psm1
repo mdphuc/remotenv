@@ -26,7 +26,7 @@ Function remotenv{
     $Content = Get-Content "$($location)/config.txt"
     Invoke-Command {rm "$($location)/config.txt"}
 
-    if($setting -ne "docker" -And $setting -ne "remote machine"){
+    if($setting -ne "docker" -And $setting -ne "remote machine" -And $setting -ne "ssh"){
       Write-Host "Invalid mode"
     }elseif($setting -eq "docker"){
       $mode = Read-Host "Mode (build, reset)"
@@ -67,8 +67,8 @@ Function remotenv{
         Invoke-Command {docker system prune -y}
       }
     }else{
-      $mode = Read-Host "Mode (build, reset, ssh)"
-      if($mode -ne "build" -And $mode -ne "reset" -And $mode -ne "ssh"){
+      $mode = Read-Host "Mode (build, reset)"
+      if($mode -ne "build" -And $mode -ne "reset"){
         Write-Host "Invalid mode"
       }elseif($mode -eq "build"){
         try{
@@ -112,15 +112,17 @@ Function remotenv{
         Invoke-Command {docker exec -it $docker_name sh -c "ssh -i /root/.ssh/id_rsa $($username)@$($ip) 'rm -rf /$($project)'"}
         Invoke-Command {docker stop $($docker_name)}
         Invoke-Command {docker system prune -y}
-      }elseif($mode -eq "ssh"){
-        $ip = $Content[2].Split(":")[1]
-        $username = $Content[3].Split(":")[1]
-        $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
-        Invoke-Command {docker exec -it $docker_name sh -c "ssh -i ~/.ssh/id_rsa $($username)@$($ip)"}
-      }
     }
-  }else{
+  }elseif($setting -eq "remote machine"){
     Invoke-Command {powershell -f ./module.ps1}
+  }elseif($setting -eq "ssh"){
+    cd $location
+    $project = $(Invoke-Command {Split-Path -Path (Get-Location) -Leaf}).ToString()
+    $Content = Get-Content "$($location)/config.txt"
+    $ip = $Content[2].Split(":")[1]
+    $username = $Content[3].Split(":")[1]
+    $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
+    Invoke-Command {docker exec -it $docker_name sh -c "ssh -i ~/.ssh/id_rsa $($username)@$($ip)"}
   }
 
   cd "$($location)"
