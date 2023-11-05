@@ -8,7 +8,7 @@ This project is designed to help developers deploy and test their code on a remo
 1) [Installation](#installation)
 2) [Usage](#usage)
 3) [Requirement](#requirement)
-4) [Yaml Guide](#Yaml Guide)
+4) [Yaml Guide](#Yaml)
 5) [Contributing Policy](#contributing)
 6) [Constraints](#constraints)
 7) [License](#license)
@@ -36,7 +36,7 @@ run ```pip install -r requirements.txt```
   - Create a file called authorized_keys in ```~/.ssh/```, which contain the public key that you copy previously
   - For more information, please visit this <a href="https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix">link</a>
 
-## Yaml Guide
+## Yaml
 Write your yaml file follow this order: `environment`, `framework`, `ip`, `username` and save the file as `Envfile.yml` in your project directory
 ##### Example 
 ```
