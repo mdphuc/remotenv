@@ -126,6 +126,6 @@ Function remotenv{
   }
 
   cd "$($location)"
-  }
+
 }
 Export-ModuleMember -Function "remotenv"
