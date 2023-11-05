@@ -29,33 +29,42 @@ if($option -ne "build" -And $option -ne "cmdlets"){
   if($setting -ne "docker" -And $setting -ne "remote machine"){
     Write-Host "Invalid mode"
   }elseif($setting -eq "docker"){
-    try{
-      $environment = $Content[0].Split(":")[1]
-      $framework = $Content[1].Split(":")[1]
-      cd $location
-      Invoke-Command {docker run --name $($project) -v .:/$($project) --workdir /$($project) -itd ubuntu}
-      $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
-      Invoke-Command {docker exec -it $docker_name sh -c "apt update"}
-      Invoke-Command {docker exec -it $docker_name sh -c "apt upgrade -y"}
-      if($environment -eq "powershell"){
-        Invoke-Command {docker exec -it $docker_name sh -c "apt install -y wget apt-transport-https software-properties-common"}
-        Invoke-Command {docker exec -it $docker_name sh -c "apt install wget"}
-        Invoke-Command {docker exec -it $docker_name sh -c "wget -q 'https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb'"}
-        Invoke-Command {docker exec -it $docker_name sh -c "dpkg -i packages-microsoft-prod.deb"}
-        Invoke-Command {docker exec -it $docker_name sh -c "rm packages-microsoft-prod.deb"}
+    $mode = Read-Host "Mode (build, reset)"
+    if($mode -ne "build" -And $mode -ne "reset"){
+      Write-Host "Invalid Option"
+    }elseif($option -eq "build"){
+      try{
+        $environment = $Content[0].Split(":")[1]
+        $framework = $Content[1].Split(":")[1]
+        cd $location
+        Invoke-Command {docker run --name $($project) -v .:/$($project) --workdir /$($project) -itd ubuntu}
+        $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
         Invoke-Command {docker exec -it $docker_name sh -c "apt update"}
-        Invoke-Command {docker exec -it $docker_name sh -c "apt install -y powershell"}
+        Invoke-Command {docker exec -it $docker_name sh -c "apt upgrade -y"}
+        if($environment -eq "powershell"){
+          Invoke-Command {docker exec -it $docker_name sh -c "apt install -y wget apt-transport-https software-properties-common"}
+          Invoke-Command {docker exec -it $docker_name sh -c "apt install wget"}
+          Invoke-Command {docker exec -it $docker_name sh -c "wget -q 'https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb'"}
+          Invoke-Command {docker exec -it $docker_name sh -c "dpkg -i packages-microsoft-prod.deb"}
+          Invoke-Command {docker exec -it $docker_name sh -c "rm packages-microsoft-prod.deb"}
+          Invoke-Command {docker exec -it $docker_name sh -c "apt update"}
+          Invoke-Command {docker exec -it $docker_name sh -c "apt install -y powershell"}
 
+        }
+        if($framework -eq "python" -Or $framework -eq "python3" -Or $framework -eq "python2"){
+          Invoke-Command {docker exec -it $docker_name sh -c "apt install -y python3"}
+        }else{
+          Invoke-Command {docker exec -it $docker_name sh -c "apt install -y $($framework)"}
+        }
+        Write-Host "$($docker_name)"
+        Invoke-Command {docker exec -it $docker_name /bin/bash}
+      }catch{
+          Write-Host $_
       }
-      if($framework -eq "python" -Or $framework -eq "python3" -Or $framework -eq "python2"){
-        Invoke-Command {docker exec -it $docker_name sh -c "apt install -y python3"}
-      }else{
-        Invoke-Command {docker exec -it $docker_name sh -c "apt install -y $($framework)"}
-      }
-      Write-Host "$($docker_name)"
-      Invoke-Command {docker exec -it $docker_name /bin/bash}
-    }catch{
-        Write-Host $_
+    }elseif($mode -eq "reset"){
+      $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
+      Invoke-Command {docker stop $($docker_name)}
+      Invoke-Command {docker system prune}
     }
   }else{
     $mode = Read-Host "Mode (build, reset)"
