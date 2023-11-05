@@ -23,7 +23,7 @@ run ```pip install -r requirements.txt```
 - For ```remote machine``` function
   - Copy ssh public key located in ```<your project name>/.ssh/id_rsa.pub```
   - Create a file called authorized_keys in ```~/.ssh/```, which contain the public key that you copy previously
-  - For more information, please visit <a href="https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix">this link</a>
+  - For more information, please visit this <a href="https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix">link</a>
 
 ## YAML Guide
 Write your yaml file follow this order: `environment`, `framework`, `ip`, `username` and save the file as `Envfile.yml` in your project directory
@@ -41,6 +41,7 @@ ip:
 username:
   phuc
 ```
+- For more information, please visit this <a href="https://www.cloudbees.com/blog/yaml-tutorial-everything-you-need-get-started">link</a>
 
 ## Requirement
 - Python 3.5+
