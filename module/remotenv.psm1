@@ -20,7 +20,7 @@ Function remotenv{
   }elseif($option -eq "build"){
     $project = $(Invoke-Command {Split-Path -Path (Get-Location) -Leaf}).ToString()
     cd "$($env:USERPROFILE)\AppData\Local\Programs\Python\Python$($python_version)"
-    Invoke-Command {.\python.exe "$($drive)/Windows/System32/WindowsPowerShell/v1.0/Modules/readyaml.py" "$($location)"}
+    Invoke-Command {.\python.exe "$($drive)/Windows/System32/WindowsPowerShell/v1.0/Modules/remotenv/readyaml.py" "$($location)"}
 
     $setting = Read-Host "Mode (docker, remote machine)"
     $Content = Get-Content "$($location)/config.txt"
@@ -32,7 +32,7 @@ Function remotenv{
       $mode = Read-Host "Mode (build, reset)"
       if($mode -ne "build" -And $mode -ne "reset"){
         Write-Host "Invalid Option"
-      }elseif($option -eq "build"){
+      }elseif($mode -eq "build"){
         try{
           $environment = $Content[0].Split(":")[1]
           $framework = $Content[1].Split(":")[1]
@@ -64,11 +64,11 @@ Function remotenv{
       }elseif($mode -eq "reset"){
         $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
         Invoke-Command {docker stop $($docker_name)}
-        Invoke-Command {docker system prune}
+        Invoke-Command {docker system prune -y}
       }
     }else{
-      $mode = Read-Host "Mode (build, reset)"
-      if($mode -ne "build" -And $mode -ne "reset"){
+      $mode = Read-Host "Mode (build, reset, ssh)"
+      if($mode -ne "build" -And $mode -ne "reset" -And $mode -ne "ssh"){
         Write-Host "Invalid mode"
       }elseif($mode -eq "build"){
         try{
@@ -85,20 +85,38 @@ Function remotenv{
           Invoke-Command {docker exec -it $docker_name sh -c "apt install systemctl -y"}
           Invoke-Command {docker exec -it $docker_name sh -c "ssh-keygen -t rsa"}
           Invoke-Command {docker exec -it $docker_name sh -c "mkdir /$($project)/.ssh"}
-          Invoke-Command {docker exec -it $docker_name sh -c "cp /root/.ssh/id_rsa.pub /$($project)/.ssh"}
-          Invoke-Command {docker exec -it $docker_name sh -c "ssh $($username)@$($ip) -i /root/.ssh/id_rsa 'mkdir /$($project)'"}
-          Invoke-Command {docker exec -it $docker_name sh -c "echo 'while true; do scp -i /root/.ssh/id_rsa -r /$($project) $($username)@$($ip):/$($project) 2>&1 </dev/null; sleep 30; done' > /$($project)/bash/monitor.sh"}
-          Invoke-Command {docker exec -it $docker_name sh -c "chmod +x /$($project)/bash/monitor.sh"}
-          Invoke-Command {docker exec -it $docker_name sh -c "cp /$($project)/bash/monitor.service /lib/systemd/system/monitor.service"}
-          Invoke-Command {docker exec -it $docker_name sh -c "cp /$($project)/bash/monitor.sh /usr/bin/monitor.sh"}
+          Invoke-Command {docker exec -it $docker_name sh -c "cp ~/.ssh/id_rsa.pub /$($project)/.ssh"}
+          Invoke-Command {docker exec -it $docker_name sh -c "echo '#!/bin/bash' >> /$($project)/monitor.sh"}
+          Invoke-Command {docker exec -it $docker_name sh -c "echo 'while true; do scp -i ~/.ssh/id_rsa -r /$($project) $($username)@$($ip):/ 2>&1 </dev/null; sleep 1; done' >> /$($project)/monitor.sh"}
+          Invoke-Command {docker exec -it $docker_name sh -c "echo 'Host dev' >> /$($project)/config"}
+          Invoke-Command {docker exec -it $docker_name sh -c "echo '  HostName $($ip)' >> /$($project)/config"}
+          Invoke-Command {docker exec -it $docker_name sh -c "echo '  User $($username)' >> /$($project)/config"}
+          Invoke-Command {docker exec -it $docker_name sh -c "echo '  IdentityFile ~/.ssh/id_rsa' >> /$($project)/config"}
+          Invoke-Command {docker exec -it $docker_name sh -c "mv /$($project)/config ~/.ssh"}
+          Invoke-Command {cp "$($drive)/Windows/System32/WindowsPowerShell/v1.0/Modules/remotenv/bash/monitor.service" $location}
+          Invoke-Command {docker exec -it $docker_name sh -c "cp /$($project)/monitor.service /lib/systemd/system/monitor.service"}
+          Invoke-Command {docker exec -it $docker_name sh -c "cp /$($project)/monitor.sh /usr/bin/monitor.sh"}
           Invoke-Command {docker exec -it $docker_name sh -c "systemctl daemon-reload"}
           Invoke-Command {docker exec -it $docker_name sh -c "systemctl enable monitor.service"}
           Invoke-Command {docker exec -it $docker_name sh -c "systemctl start monitor.service"}
+          Invoke-Command {rm "$($location)/monitor.service"}
+          Invoke-Command {rm "$($location)/monitor.sh"}
         }catch{
           Write-Host $_
         }
       }elseif($mode -eq "reset"){
-        Invoke-Command {docker exec -it $docker_name sh -c "ssh $($username)@$($ip) -i /root/.ssh/id_rsa 'rm -rf /$($project)'"}
+        $ip = $Content[2].Split(":")[1]
+        $username = $Content[3].Split(":")[1]
+        $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
+        Invoke-Command {docker exec -it $docker_name sh -c "cd /"}
+        Invoke-Command {docker exec -it $docker_name sh -c "ssh -i /root/.ssh/id_rsa $($username)@$($ip) 'rm -rf /$($project)'"}
+        Invoke-Command {docker stop $($docker_name)}
+        Invoke-Command {docker system prune -y}
+      }elseif($mode -eq "ssh"){
+        $ip = $Content[2].Split(":")[1]
+        $username = $Content[3].Split(":")[1]
+        $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
+        Invoke-Command {docker exec -it $docker_name sh -c "ssh -i ~/.ssh/id_rsa $($username)@$($ip)"}
       }
     }
   }else{

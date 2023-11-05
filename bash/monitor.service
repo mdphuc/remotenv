@@ -2,7 +2,8 @@
 Description=Monitor File
 
 [Service]
-ExecStart=/usr/bin/monitor.sh
+ExecStart=/bin/bash /usr/bin/monitor.sh
+
 
 [Install]
 WantedBy=multi-user.target
