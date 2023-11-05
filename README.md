@@ -14,23 +14,21 @@ This project is designed to help developers deploy and test their code on a remo
 7) [License](#license)
 
 ## Installation
+run ```pip install -r requirements.txt```
 Use <a href="https://git-scm.com/" target="_blank">git</a> to install:
 ```bash
 git clone https://github.com/mdphuc/remotenv.git
 ```
+run `cmdlets` to set up the program as powershell cmdlets
 
 ## Usage
-run ```pip install -r requirements.txt```
 ```powershell
-.\remotenv.ps1
-
+remotenv
   build:            set up remote dev environment
                         docker: build docker container
                         remote machine: use remote machine as remote dev environment
   cmdlets:          build powershell cmdlets
 ```
-- For cmdlets function: run ./remotenv.ps1 cmdlets as administrator
-- Then when run the program again, just simply run ```remotenv```
 - For ```remote machine``` function
   - Copy ssh public key located in ```<your project name>/.ssh/id_rsa.pub```
   - Create a file called authorized_keys in ```~/.ssh/```, which contain the public key that you copy previously
