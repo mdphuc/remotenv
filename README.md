@@ -2,7 +2,7 @@
 <img src='https://github.com/mdphuc/remotenv/assets/41264640/98901d8c-66a3-4351-a5fb-977b174e02aa' style="width:250px; height: auto">
 
 #
-This project is designed to help developers deploy and test their code on a remote environment of their choice, whether is docker, virtual machine, remote machine, or cloud machine. One of the problem I think this project is gonna come in handy is the difference between dev environment and the environemnt that they want to build their code for. Utilizing this project, developers can choose to use Windows as their development environment and run code on linux, or vice versa. It will be an isolated environment, offering user an option of reset everything to the starting point when finish with their program, not having to worry about extra library or module, framework, or environment, that are not really important for their code.
+This project is designed to help developers deploy and test their code on a remote environment of their choice, whether is docker, virtual machine, remote machine, or cloud machine. One of the problem I think this project is gonna come in handy is the difference between dev environment and the environment that they want to build their code for. Utilizing this project, developers can choose to use Windows as their development environment and run code on linux, or vice versa. It will be an isolated environment, offering user an option of reset everything to the starting point when finish with their program, not having to worry about extra library or module, framework, or environment, that are not really important for their code.
 
 ## Table of Content
 1) [Installation](#installation)
