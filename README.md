@@ -1,6 +1,17 @@
 # remotenv v1.0
+<img src='https://github.com/mdphuc/remotenv/assets/41264640/98901d8c-66a3-4351-a5fb-977b174e02aa' style="width:250px; height: auto">
 
+#
 This project is designed to help developers deploy and test their code on a remote environment of their choice, whether is docker, virtual machine, remote machine, or cloud machine. One of the problem I think this project is gonna come in handy is the difference between dev environment and the environemnt that they want to build their code for. Utilizing this project, developers can choose to use Windows as their development environment and run code on linux, or vice versa. It will be an isolated environment, offering user an option of reset everything to the starting point when finish with their program, not having to worry about extra library or module, framework, or environment, that are not really important for their code.
+
+## Table of Content
+1) [Installation](#installation)
+2) [Usage](#usage)
+3) [Requirement](#requirement)
+4) [Yaml Guide](#Yaml Guide)
+5) [Contributing Policy](#contributing)
+6) [Constraints](#constraints)
+7) [License](#license)
 
 ## Installation
 Use <a href="https://git-scm.com/" target="_blank">git</a> to install:
@@ -25,7 +36,7 @@ run ```pip install -r requirements.txt```
   - Create a file called authorized_keys in ```~/.ssh/```, which contain the public key that you copy previously
   - For more information, please visit this <a href="https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix">link</a>
 
-## YAML Guide
+## Yaml Guide
 Write your yaml file follow this order: `environment`, `framework`, `ip`, `username` and save the file as `Envfile.yml` in your project directory
 ##### Example 
 ```
