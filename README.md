@@ -8,7 +8,7 @@ This project is designed to help developers deploy and test their code on a remo
 1) [Installation](#installation)
 2) [Usage](#usage)
 3) [Requirement](#requirement)
-4) [Yaml Guide](#Yaml)
+4) [Yaml Guide](#yaml)
 5) [Contributing Policy](#contributing)
 6) [Constraints](#constraints)
 7) [License](#license)
@@ -62,3 +62,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Constraints
 - This project depends heavily on the connection between docker container and docker container or remote machine. So for the best use, make sure they are configured so that they can be accessed from each other on the Internet
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
