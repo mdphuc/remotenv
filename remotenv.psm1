@@ -9,7 +9,7 @@ Function remotenv{
   $python_version = $python_version.SubString(7,$python_version.Length - 7).Split(".")
   $python_version = $python_version[0] + $python_version[1]
 
-  if($option -ne "build" -And $option -ne "cmdlets"){
+  if($option -ne "build" -And $option -ne "cmdlets" -And $option -ne "ssh"){
     Write-Host "
   remotenv
     build:            set up remote dev environment
@@ -64,7 +64,7 @@ Function remotenv{
       }elseif($mode -eq "reset"){
         $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
         Invoke-Command {docker stop $($docker_name)}
-        Invoke-Command {docker system prune -y}
+        Invoke-Command {docker system prune -f}
       }
     }else{
       $mode = Read-Host "Mode (build, reset)"
@@ -111,14 +111,21 @@ Function remotenv{
         Invoke-Command {docker exec -it $docker_name sh -c "cd /"}
         Invoke-Command {docker exec -it $docker_name sh -c "ssh -i /root/.ssh/id_rsa $($username)@$($ip) 'rm -rf /$($project)'"}
         Invoke-Command {docker stop $($docker_name)}
-        Invoke-Command {docker system prune -y}
+        Invoke-Command {docker system prune -f}
+      }
     }
-  }elseif($setting -eq "remote machine"){
+  }elseif($option -eq "cmdlets"){
     Invoke-Command {powershell -f ./module.ps1}
-  }elseif($setting -eq "ssh"){
-    cd $location
+  }elseif($option -eq "ssh"){
+    cd "$($location)"
     $project = $(Invoke-Command {Split-Path -Path (Get-Location) -Leaf}).ToString()
+    cd "$($env:USERPROFILE)\AppData\Local\Programs\Python\Python$($python_version)"
+    Invoke-Command {.\python.exe "$($drive)/Windows/System32/WindowsPowerShell/v1.0/Modules/remotenv/readyaml.py" "$($location)"}
+
+    cd "$($location)"
     $Content = Get-Content "$($location)/config.txt"
+    Invoke-Command {rm "$($location)/config.txt"}
+
     $ip = $Content[2].Split(":")[1]
     $username = $Content[3].Split(":")[1]
     $docker_name = Invoke-Command {docker container ls --all --quiet --filter "name=$($project)"}
@@ -126,6 +133,6 @@ Function remotenv{
   }
 
   cd "$($location)"
-  }
 }
+
 Export-ModuleMember -Function "remotenv"
