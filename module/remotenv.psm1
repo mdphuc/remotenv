@@ -112,6 +112,7 @@ Function remotenv{
         Invoke-Command {docker exec -it $docker_name sh -c "ssh -i /root/.ssh/id_rsa $($username)@$($ip) 'rm -rf /$($project)'"}
         Invoke-Command {docker stop $($docker_name)}
         Invoke-Command {docker system prune -y}
+      }
     }
   }elseif($setting -eq "remote machine"){
     Invoke-Command {powershell -f ./module.ps1}
@@ -127,5 +128,5 @@ Function remotenv{
 
   cd "$($location)"
   }
-}
+
 Export-ModuleMember -Function "remotenv"
