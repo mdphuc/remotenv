@@ -43,7 +43,6 @@ Function remotenv{
           Invoke-Command {docker exec -it $docker_name sh -c "apt upgrade -y"}
           if($environment -eq "powershell"){
             Invoke-Command {docker exec -it $docker_name sh -c "apt install -y wget apt-transport-https software-properties-common"}
-            Invoke-Command {docker exec -it $docker_name sh -c "apt install wget"}
             Invoke-Command {docker exec -it $docker_name sh -c "wget -q 'https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb'"}
             Invoke-Command {docker exec -it $docker_name sh -c "dpkg -i packages-microsoft-prod.deb"}
             Invoke-Command {docker exec -it $docker_name sh -c "rm packages-microsoft-prod.deb"}
